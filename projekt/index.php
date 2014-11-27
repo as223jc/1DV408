@@ -70,13 +70,17 @@ try{
                 </form>
                 ";
                 else{
-                    if(isset($_SESSION["logged_in"]))
-                echo "
+                    if(isset($_SESSION["logged_in"])){
+                        echo "
                     <p id='loggedinSq'>
                         Welcome back, <a href='?accountpage'>". @$_COOKIE['UID'] ."</a>!
-                        <a href='?accountpage'>Account</a>,   <a href='src/controller/logout.php'>Logout</a>
+                        <a href='?accountpage'>Account</a>,";
+                        if($accInfo["accounttype"]===2)
+                            echo "<a href='?createpost'>New Post</a>";
+                        echo "
+                             <a href='src/controller/logout.php'>Logout</a>
                     </p>
-                ";}
+                ";}}
                 ?>
             </div>
 
@@ -162,6 +166,18 @@ try{
                 </div>
                 ";
                 echo $mainContent["accountpage"];
+            }else if($accInfo["accounttype"] === 2 && isset($_GET["createpost"])){
+                echo $adminContent["createPost"] = "
+               <div id='post-div'>
+                    <fieldset class='pagefieldset'>
+                        <legend>New Post</legend>
+                        <form action='' method='post'></form>
+                        <input type='text' name='newposttitle' id='newposttitle' placeholder='Enter a title'/>
+                        <textarea name='newposttext' id='newposttext' cols='30' rows='10' placeholder='Type something..'></textarea>
+                        <button name='submitpost' id='postButton'>Submit</button>
+                    </fieldset>
+                </div>
+                ";
             } else {
 //                $mainContent["blogposts"]
                 $posts = array_reverse($posts);
@@ -200,6 +216,7 @@ try{
                     </fieldset>
                 </div>
             ";
+
             ?>
         </main><!--main end-->
         <footer id="page-footer">
