@@ -228,12 +228,46 @@ color:white;
     width:350px;
     height:auto;
     margin:0 auto;
-    border: 1px solid white;
     padding: 15px;
 }
 #accountpage_title{
     font-size:20px;
     margin-bottom:15px;
+}
+
+#charlist{
+    float:left;
+}
+
+.delchar{
+float:right;
+    width:50px;
+
+}
+
+.returntoacc{
+    float:left;
+}
+#characterPage{
+    color:white;
+    width:350px;
+    height:auto;
+    margin:0 auto;
+    padding: 15px;
+}
+
+#createCharacterPage{
+    color:white;
+    width:200px;
+    height:auto;
+    margin:0 auto;
+    padding: 15px;
+}
+
+.pagefieldset{
+    color: white;
+    border: 1px solid white;
+    padding: 8px;
 }
 
 #page-footer p{

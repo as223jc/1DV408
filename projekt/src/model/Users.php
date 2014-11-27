@@ -145,6 +145,27 @@ class Users {
         return $str[0];
     }
 
+    function existingCharacter($playername){
+        $str = [];
+        $username = strtolower($playername);
+
+        if($username == "")
+            $str[0] = "Username must not be empty";
+        else if(strlen($username) < 4)
+            $str[0] = "Username must be at least 4 characters long";
+        else if (preg_match('/[^\dA-Za-z]/i', $playername))
+            $str[0] = "Username must not contain symbols or characters";
+        if(!$str) {
+            if($this->accountDAL->characterExists(["playername" => $playername])){
+                $str[0] = "Character already exists";
+                return $str;
+            }else{
+                return false;
+            }
+        }
+        return $str;
+    }
+
     function retrieveAccount($usr){
         return $this->accountDAL->getAccount(["username"=>$usr]);
     }
@@ -165,6 +186,17 @@ class Users {
     function getAccountId($usr){
         $accInfo = $this->accountDAL->getAccount(["username"=>$usr]);
         return $accInfo["id"];
+    }
+
+    function deleteCharacter($playername){
+        return $this->accountDAL->deleteCharacter(["playername"=>$playername]);//
+    }
+
+    function createNewCharacter($characterInfo){
+        $ret = $this->existingCharacter($characterInfo["playername"]);
+           if(!$ret)
+               return $this->accountDAL->createCharacter($characterInfo);
+        return $ret[0];
     }
 
 }

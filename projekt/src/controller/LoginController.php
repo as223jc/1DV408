@@ -63,6 +63,14 @@ class Login {
         return $this->users->getCharacterListWithUsername($usr);
     }
 
+    function deleteCharacterSuccessful($playername){
+        return $this->users->deleteCharacter($playername);
+    }
+
+    function characterCreated($characterInfo){
+        return $this->users->createNewCharacter($characterInfo);
+    }
+
     function logOut(){
         if(session_destroy()){
             unset($_SESSION["logged_in"]);

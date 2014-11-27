@@ -65,8 +65,8 @@ class AccountDAL {
             `playerposition` VARCHAR(25),
             `backpack` VARCHAR(500),
             `equipped` VARCHAR(500),
-            `lastlogin` INT,
-            `created` INT
+            `created` INT,
+            `lastlogin` INT
         ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
         if(!$this->mysqli->query($q)){
             throw new Exception("'$q' failed. error: ". $this->mysqli->error);
@@ -252,8 +252,8 @@ class AccountDAL {
         if(!$statement)
             throw new Exception("Kunde inte preparera sql-satsen:<br> $q.<br><br> Felmeddelande:<br>". $this->mysqli->error);
         if(!$statement->bind_param("isis",
-            $character["accountId"],
-            $character["playerName"],
+            $character["accountid"],
+            $character["playername"],
             $character["sex"],
             $character["playerposition"]))
             throw new Exception("Kunde inte bind_param:<br> $q.<br><br> Felmeddelande:<br>". $statement->error);
@@ -278,8 +278,17 @@ class AccountDAL {
             throw new Exception("Kunde inte bind_param:<br> $q.<br><br> Felmeddelande:<br>". $statement->error);
         if(!$statement->execute())
             throw new Exception("Kunde inte exekvera sql-satsen:<br> $q.<br><br> Felmeddelande:<br>". $statement->error);
-        else
-            return true;
+        else{
+//            $statement->store_result();
+//            $qc = null;
+//            $statement->bind_result($qc);
+//            $statement->fetch();
+
+            if($statement->affected_rows >= 1){
+                return true;
+            }
+            return false;
+        }
     }
 
     /**
@@ -319,7 +328,7 @@ class AccountDAL {
      * @throws Exception
      */
     function getCharacterWithName($character){
-        $q = 'SELECT id,account_id,playername,level,sex,playerposition,backpack,equipped FROM `'.self::$characterTable.'` WHERE `playername` = (?)';
+        $q = 'SELECT id,account_id,playername,level,sex,playerposition,backpack,equipped,created,lastlogin FROM `'.self::$characterTable.'` WHERE `playername` = (?)';
 
         $statement = $this->mysqli->prepare($q);
         if(!$statement)
@@ -339,7 +348,9 @@ class AccountDAL {
                 $result["sex"],
                 $result["playerposition"],
                 $result["backpack"],
-                $result["equipped"]);
+                $result["equipped"],
+                $result["created"],
+                $result["lastlogin"]);
             $statement->fetch();
             return $result;
         }
@@ -351,7 +362,7 @@ class AccountDAL {
      * @throws Exception
      */
     function getCharactersWithAccountId($account){
-        $q = 'SELECT id,account_id,playername,level,sex,playerposition,backpack,equipped FROM `'.self::$characterTable.'` WHERE `account_id` = (?) ORDER BY `id`';
+        $q = 'SELECT id,account_id,playername,level,sex,playerposition,backpack,equipped,created,lastlogin FROM `'.self::$characterTable.'` WHERE `account_id` = (?) ORDER BY `id`';
 
         $statement = $this->mysqli->prepare($q);
         if(!$statement)
@@ -372,7 +383,9 @@ class AccountDAL {
                 $sex,
                 $playerposition,
                 $backpack,
-                $equipped);
+                $equipped,
+                $created,
+                $lastlogin);
             while($statement->fetch()){
                 $resultTot[]= [
                     "id"=>$id,
@@ -382,7 +395,9 @@ class AccountDAL {
                     "sex"=>$sex,
                     "playerposition"=>$playerposition,
                     "backpack"=>$backpack,
-                    "equipped"=>$equipped
+                    "equipped"=>$equipped,
+                    "created"=>$created,
+                    "lastlogin"=>$lastlogin
                 ];
             };
             $statement->close();
@@ -407,8 +422,6 @@ class AccountDAL {
     }
 
     function createAccAuth($username, $token, $date){
-        $date = strval($date);
-//        die($date);
         $q = "UPDATE ".self::$accountTable."
               SET loginid = '".$token."', lastlogin = '".$date."'
               WHERE username = (?)";
