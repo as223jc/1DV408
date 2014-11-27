@@ -1,0 +1,261 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+body, html{
+    background: rgb(173, 218, 237);
+    height:100%;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.red{
+    color: #ff1403;
+    text-align: right;
+
+}
+
+.green{
+    color:green;
+    text-align: right;
+}
+
+#wrapper{
+    /*background: rgba(0, 59, 84, 1);*/
+    width: 1000px;
+    margin:0 auto;
+    position: relative;
+    height:100%;
+    overflow: hidden;
+}
+
+#page-logo{
+    height:130px;
+    /*background: rgba(0, 59, 84, 1);*/
+    background:rgba(89, 174, 210, 1);
+}
+
+#page-logotype a{
+    text-decoration: none;
+    color:white;
+}
+
+
+#main-content{
+    /*background: rgba(0, 59, 84, 1);*/
+    background:rgba(89, 174, 210, 1);
+    width:100%;
+    height:75%;
+}
+
+#front-page{
+    width: 75%;
+    float: left;
+}
+
+#page-footer{
+    background: rgba(255, 255, 255, 0.82);
+    height:22%;
+    width:100%;
+    position:relative;
+    bottom: 100px;
+}
+
+#login-div{
+    width:185px;
+    height:70%;
+    float:right;
+    /*background: rgba(0, 59, 84, 1);*/
+    margin-top:10px;
+}
+
+#login-form{
+    width:100%;
+    height:100%;
+}
+
+#login-form input{
+    margin-bottom: 2px;
+}
+
+#loggedinSq{
+    color: #c1c1c1;
+}
+
+#loggedinSq a{
+    color: white;
+}
+
+#register-div{
+    width: 173px;
+    height: 141px;
+    float:right;
+    /*background: rgb(255, 20, 3);*/
+    margin-top:10px;
+    margin-right: 13px;
+}
+
+#register-form{
+    width: 100%;
+    height: 100%;
+    float: right;
+}
+
+#register-form input{
+    margin-bottom: 3px;
+}
+
+#register-form button{
+    margin: 0 65px;
+    width:70px;
+    height:25px;
+    position: relative;
+}
+
+
+#page-logotype{
+    color:white;
+    float:left;
+    font-size:95px;
+}
+
+#articles{
+    float: left;
+    width:810px;
+}
+
+.article_post{
+    background:rgba(255, 255, 255, 0.67);
+    width: 77%;
+    float: right;
+    margin:0 auto 15px;
+    padding:5px 0 5px;
+    height:auto;
+    border-radius: 5px;
+}
+
+.article_header{
+    font-size:25px;
+
+    padding:0 0 0 5px;
+}
+
+.article_body{
+    font-size:15px;
+
+    height:auto;
+    padding:5px 0 5px 5px;
+}
+.article_footer{
+    font-size: 11px;
+    bottom: 0;
+
+    height: 15px;
+    position: relative;
+    padding:3px 0 0 5px;
+}
+
+#login-form div{
+    width:116px;
+}
+
+#formError p{
+    margin-top:2px;
+    color:red;
+    border-radius: 5px;
+    font-style: italic;
+    font-size: 13px;
+    width: 90%;
+    font-weight: 800;
+}
+
+#formSuccess{
+    margin-top:2px;
+    color:green;
+    border-radius: 5px;
+    font-style: italic;
+    font-size: 13px;
+    width: 90%;
+    font-weight: 800;
+}
+
+#accountPage{
+color:white;
+    width:350px;
+    height:auto;
+    margin:0 auto;
+    border: 1px solid white;
+    padding: 15px;
+}
+#accountpage_title{
+    font-size:20px;
+    margin-bottom:15px;
+}
+
+#page-footer p{
+    padding-top:10px;
+}
+
+
+.italic{
+    font-style: italic;
+}
+
+.small{
+    font-size:  12px;
+}
+
+.gray{
+    color:rgb(221, 221, 221);
+}
+.white{
+    color:white;
+}
+
+#characterCreation{
+
+}
