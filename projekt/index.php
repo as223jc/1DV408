@@ -7,7 +7,10 @@ try{
     $registrationSuccess = "";
     $charResponse = "";
     $postResponse = "";
+
+    //connection för MYSQLI
     $mysqli = new mysqli("localhost", "admin", "", "projekt");
+
     $lControl = new Login($mysqli);
     @$characterList = $lControl->getAllCharacters($_COOKIE["UID"]);
     $posts = $lControl->getAllPosts();
