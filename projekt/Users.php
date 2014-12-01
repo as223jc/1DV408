@@ -16,9 +16,6 @@ class Users {
      */
     function __construct(mysqli $db) {
         $this->accountDAL = new AccountDAL($db);
-        $this->accountDAL->createAccountTable();
-        $this->accountDAL->createCharacterTable();
-        $this->accountDAL->createPostTable();
     }
 
     /**

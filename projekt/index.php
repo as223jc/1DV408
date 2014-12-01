@@ -9,7 +9,7 @@ try{
     $postResponse = "";
 
     //connection för MYSQLI
-    $mysqli = new mysqli("localhost", "admin", "", "projekt");
+    $mysqli = new mysqli("localhost", "admin", "apskaftet", "projekt");
 
     $lControl = new Login($mysqli);
     @$characterList = $lControl->getAllCharacters($_COOKIE["UID"]);
