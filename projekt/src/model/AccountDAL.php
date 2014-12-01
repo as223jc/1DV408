@@ -37,12 +37,12 @@ class AccountDAL {
         (
             `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY  ,
             `username` VARCHAR(25),
-            `password` VARCHAR(35),
-            `email` VARCHAR(40),
-            `loginid` INT,
-            `lastlogin` INT,
+            `password` VARCHAR(64),
+            `email` VARCHAR(50),
+            `loginid` VARCHAR(64),
+            `lastlogin` VARCHAR(14),
             `created` INT,
-            `accounttype` TINYINT(1)
+            `accounttype` TIMESTAMP
         ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
         if(!$this->mysqli->query($q)){
             throw new Exception("'$q' failed. error: ". $this->mysqli->error);
@@ -65,8 +65,8 @@ class AccountDAL {
             `playerposition` VARCHAR(25),
             `backpack` VARCHAR(500),
             `equipped` VARCHAR(500),
-            `created` INT,
-            `lastlogin` INT
+            `created` TIMESTAMP,
+            `lastlogin` VARCHAR(14)
         ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
         if(!$this->mysqli->query($q)){
             throw new Exception("'$q' failed. error: ". $this->mysqli->error);
