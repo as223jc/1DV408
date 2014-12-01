@@ -199,4 +199,16 @@ class Users {
         return $ret[0];
     }
 
+    function createNewPost($post){
+        return $this->accountDAL->createPost($post);
+    }
+
+    function editExistingPost($post){
+        return $this->accountDAL->editPost($post);
+    }
+
+    function deletePost($postid){
+        return $this->accountDAL->deletePostDB($postid);
+    }
+
 }

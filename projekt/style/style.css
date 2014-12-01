@@ -56,7 +56,11 @@ body, html{
 .red{
     color: #ff1403;
     text-align: right;
+}
 
+.blue{
+    color: #112dff;
+    text-align: right;
 }
 
 .green{
@@ -305,4 +309,13 @@ float:right;
 #newposttext{
     resize: none;
     width: 325px;
+}
+
+#postx{
+    float:right;
+    margin: -5px 3px 0px;
+}
+
+#exampletext{
+    padding:10px;
 }

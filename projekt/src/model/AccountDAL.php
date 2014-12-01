@@ -471,6 +471,65 @@ class AccountDAL {
         }
     }
 
+    function createPost($newpost){
+        $q = "INSERT INTO ". self::$postTable ."
+        (
+            title,
+            text,
+            author,
+            created
+        )
+        VALUES(?, ?, ?, ".date("YmdGis").")";
 
+        $statement = $this->mysqli->prepare($q);
+        if(!$statement)
+            throw new Exception("Kunde inte preparera sql-satsen:<br> $q.<br><br> Felmeddelande:<br>". $this->mysqli->error);
+        if(!$statement->bind_param("sss",
+            $newpost["title"],
+            $newpost["text"],
+            $newpost["author"]))
+            throw new Exception("Kunde inte bind_param:<br> $q.<br><br> Felmeddelande:<br>". $statement->error);
+        if(!$statement->execute())
+            throw new Exception("Kunde inte exekvera sql-satsen:<br> $q.<br><br> Felmeddelande:<br>". $statement->error);
+        else
+            return true;
+    }
 
+    function editPost($post){
+        $q = "UPDATE
+              ".self::$postTable."
+              SET
+              title = '".$post["title"]."',
+              text = '".$post["text"]."'
+              WHERE
+              id = (?)";
+
+        $statement = $this->mysqli->prepare($q);
+        if(!$statement)
+            throw new Exception("Kunde inte preparera sql-satsen:<br> $q.<br><br> Felmeddelande:<br>". $this->mysqli->error);
+        if(!$statement->bind_param("s", $post["id"]))
+            throw new Exception("Kunde inte bind_param:<br> $q.<br><br> Felmeddelande:<br>". $statement->error);
+        if(!$statement->execute())
+            throw new Exception("Kunde inte exekvera sql-satsen:<br> $q.<br><br> Felmeddelande:<br>". $statement->error);
+        else
+            return true;
+    }
+
+    function deletePostDB($postid){
+        $q = "DELETE FROM ".self::$postTable." WHERE id = (?)";
+
+        $statement = $this->mysqli->prepare($q);
+        if(!$statement)
+            throw new Exception("Kunde inte preparera sql-satsen:<br> $q.<br><br> Felmeddelande:<br>". $this->mysqli->error);
+        if(!$statement->bind_param("i", $postid))
+            throw new Exception("Kunde inte bind_param:<br> $q.<br><br> Felmeddelande:<br>". $statement->error);
+        if(!$statement->execute())
+            throw new Exception("Kunde inte exekvera sql-satsen:<br> $q.<br><br> Felmeddelande:<br>". $statement->error);
+        else{
+            if($statement->affected_rows >= 1){
+                return true;
+            }
+            return false;
+        }
+    }
 }

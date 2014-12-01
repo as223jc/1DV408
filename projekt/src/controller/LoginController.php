@@ -71,6 +71,18 @@ class Login {
         return $this->users->createNewCharacter($characterInfo);
     }
 
+    function postCreated($post){
+        return $this->users->createNewPost($post);
+    }
+
+    function postEdited($post){
+        return $this->users->editExistingPost($post);
+    }
+
+    function postDeleted($postid){
+        return $this->users->deletePost($postid);
+    }
+
     function logOut(){
         if(session_destroy()){
             unset($_SESSION["logged_in"]);

@@ -6,6 +6,7 @@ try{
     $registerResponse ="";
     $registrationSuccess = "";
     $charResponse = "";
+    $postResponse = "";
     $mysqli = new mysqli("localhost", "admin", "", "projekt");
     $lControl = new Login($mysqli);
     @$characterList = $lControl->getAllCharacters($_COOKIE["UID"]);
@@ -16,6 +17,10 @@ try{
     if(isset($_GET["delete"])) {
         $lControl->deleteCharacterSuccessful($_SESSION["charD"]);
         header("location: ?accountpage");
+    } else if(isset($_GET["postdel"])){
+
+        if($lControl->postDeleted($posts[$_GET["index"]]["id"])){
+            header("location: index.php");}
     }
     if(isset($_POST["submitLogin"])) {
         $loginResponse = $lControl->loginHandler();
@@ -34,6 +39,23 @@ try{
             ]);
         if($charResponse===true)
             header("location:?accountpage");
+    } else if(isset($_POST["submitpost"])){
+        $postResponse = $lControl->postCreated([
+            "title"=>$_POST["newposttitle"],
+            "text"=>$_POST["newposttext"],
+            "author"=>$accInfo["username"]
+        ]);
+        if($postResponse)
+            header("location:index.php");
+    } else if(isset($_POST["submitedit"])){
+        $editResponse = $lControl->postEdited([
+            "id"=>$_POST["editpostid"],
+            "title"=>$_POST["editposttitle"],
+            "text"=>$_POST["editposttext"]
+        ]);
+        if($editResponse)
+            header("location:index.php");
+
     }
 
 
@@ -48,7 +70,7 @@ try{
 <html lang="sv">
 <head>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<!--    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>-->
     <meta charset="UTF-8">
     <title>The System - as223jc</title>
     <link rel="stylesheet" href="style/style.css"/>
@@ -171,29 +193,57 @@ try{
                <div id='post-div'>
                     <fieldset class='pagefieldset'>
                         <legend>New Post</legend>
-                        <form action='' method='post'></form>
+                        <form action='' method='post'>
                         <input type='text' name='newposttitle' id='newposttitle' placeholder='Enter a title'/>
                         <textarea name='newposttext' id='newposttext' cols='30' rows='10' placeholder='Type something..'></textarea>
                         <button name='submitpost' id='postButton'>Submit</button>
+                        </form>
                     </fieldset>
                 </div>
                 ";
+            } else if($accInfo["accounttype"] === 2 && isset($_GET["postedit"])){
+                $adminContent["postedit"] = "
+               <div id='post-div'>
+                    <fieldset class='pagefieldset'>
+                        <legend>Edit Post</legend>
+                        <form action='' method='post'>
+                        <input type='text' name='editposttitle' id='newposttitle' placeholder='Enter a title' value='";
+                $adminContent["postedit"] .= $posts[($_GET["index"])]["title"];
+                $adminContent["postedit"] .="'><textarea name='editposttext' id='newposttext' cols='30' rows='10' placeholder='Type something..'>";
+                $adminContent["postedit"] .= $posts[$_GET["index"]]["text"];
+                $adminContent["postedit"] .= "</textarea><input type='hidden' name='editpostid' value='".$_GET["postedit"]."'>
+                        <button name='submitedit' id='postButton'>Submit Edit</button>
+                        </form>
+                    </fieldset>
+                </div>
+                ";
+                echo $adminContent["postedit"];
             } else {
 //                $mainContent["blogposts"]
                 $posts = array_reverse($posts);
-                foreach($posts as $key){
-                    $str = "<article class='article_post'>";
-                    $str .= "<header class='article_header'>";
-                    $str .= $key['title'];
-                    $str .= "</header>";
-                    $str .= "<main class='article_body'>";
-                    $str .= $key['text'];
-                    $str .= "</main>";
-                    $str .= "<footer class='article_footer'>";
-                    $str .= $key['author'].", ".$key['created'];
-                    $str .= "</footer>";
-                    $str .= "</article>";
-                    echo $str;
+                if(count($posts)>0) {
+                    $index = 0;
+                    foreach ($posts as $key) {
+                        $str = "<article class='article_post'>";
+                        if ($accInfo["accounttype"] === 2) {
+                            $str .= "<a title='Delete Post' class='small red' id='postx' href='?postdel=" . $posts[$index]["id"] . "&index=" . ((count($posts) - 1) - $index) . "'>x</a>";
+                            $str .= "<a title='Edit Post' class='small blue' id='postx' href='?postedit=" . $posts[$index]["id"] . "&index=" . ((count($posts) - 1) - $index) . "'>o</a>";
+                        }
+                        $str .= "<header class='article_header'>";
+                        $str .= $key['title'];
+                        $str .= "</header>";
+                        $str .= "<main class='article_body'>";
+                        $str .= $key['text'];
+                        $str .= "</main>";
+                        $str .= "<footer class='article_footer'>";
+                        $str .= $key['author'] . ", " . date("d-M-Y G:i", strtotime($key['created']));
+                        $str .= "</footer>";
+                        $str .= "</article>";
+                        echo $str;
+                        $index++;
+                    }
+                }else{
+                    echo "<article class='article_post'><header class='article_header'>Välkommen</header><p id='exampletext'>Just nu finns det inga posts och detta är en exempeltext som kommer att ersättas när det finns inlägg</p></article>";
                 }
             }?>
 
@@ -224,11 +274,11 @@ try{
         </footer>
     </div><!--wrapper end-->
 <script type="application/javascript">
-    $('.delchar').click(function(){
-        if(confirm("Are you sure you want to delete your character?"))
-            return true;
-        return false;
-    })
+//    $('.delchar').click(function(){
+//        if(confirm("Are you sure you want to delete your character?"))
+//            return true;
+//        return false;
+//    })
 </script>
 </body>
 </html>
