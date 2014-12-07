@@ -1,86 +1,102 @@
 <?php
 require_once('src/model/Users.php');
+require_once('src/view/PageViews.php');
+require_once('src/view/ControlViews.php');
 
 session_start();
 
 class Login {
     private $users;
-    function __construct(mysqli $mysqli) {
-        $this->users = new Users($mysqli);
+    private $pViews;
+    private $ctrlViews;
+    function __construct(mysqli $sqli) {
+        $this->users = new Users($sqli);
+        $this->pViews = new PageViews();
+        $this->ctrlViews = new ControlViews();
     }
-    function loginHandler()
-    {
-        if (!isset($_SESSION["logged_in"])) {
-            if (!$this->isAlreadyLoggedIn()) {
-                if (isset($_POST["login_username"])){
-                    return $this->logOn();
-                }
-                else if (isset($_POST["submitRegister"])) {
-                    return $this->createAccount(
-                        $_POST["register_username"],
-                        $_POST["register_password"],
-                        $_POST["register_password2"],
-                        $_POST["register_email"]
+    function loginHandler() {
+        $loginResponse="";
+        $registerResponse ="";
+        $registrationSuccess = "";
+        $charResponse = "";
+        $postResponse = "";
+
+        @$characterList = $this->users->getCharacterListWithUsername($this->ctrlViews->getCookieUsername());
+        $posts = $this->users->retrievePosts();
+        @$accInfo = $this->users->retrieveAccount($this->ctrlViews->getCookieUsername());
+        $character = null;
+
+        if($this->ctrlViews->didUserPressDeleteCharacter()) {
+            $this->users->deleteCharacter($this->ctrlViews->getSessionPlayerName());
+            header("location: ?accountpage");
+        } else if($this->ctrlViews->didUserPressDeletePost()){
+            if($this->users->deletePost($posts[$_GET["index"]]["id"])){
+                header("location: index.php");
+            }
+        }
+        if($this->ctrlViews->didUserPressSubmitLogin()) {
+            $loginResponse = $this->tryLogin();
+        } else if($this->ctrlViews->didUserPressSubmitCreateAccount()) {
+            $registerResponse = $this->tryLogin();
+            if($registerResponse===true) {
+                $registrationSuccess = "Account has been created! You may log into your account above.";
+                $registerResponse = "";
+            }
+        }else if($this->ctrlViews->didUserPressSubmitCreateCharacter()){
+            $charResponse = $this->users->createNewCharacter([
+                "accountid"=>$accInfo["id"],
+                "playername"=>$this->ctrlViews->getNewPlayerName(),
+                "sex"=>$this->ctrlViews->getNewPlayerSex(),
+                "playerposition"=>$this->ctrlViews->getNewPlayerCity()
+            ]);
+            if($charResponse===true)
+                header("location:?accountpage");
+        } else if($this->ctrlViews->didUserPressSubmitPost()){
+            $postResponse = $this->users->createNewPost([
+                "title"=>$this->ctrlViews->getNewPostTitle(),
+                "text"=>$this->ctrlViews->getNewPostText(),
+                "author"=>$accInfo["username"]
+            ]);
+            if(!$postResponse)
+                header("location:index.php");
+        } else if($this->ctrlViews->didUserPressSubmitEditPost()){
+            $postResponse = $this->users->editExistingPost([
+                "id"=>$this->ctrlViews->getEditPostId(),
+                "title"=>$this->ctrlViews->getEditPostTitle(),
+                "text"=>$this->ctrlViews->getEditPostText()
+            ]);
+            if(!$postResponse)
+                header("location:index.php");
+        }
+
+        $this->pViews->View([
+            "loginResponse"=>$loginResponse,
+            "accInfo"=>$accInfo,
+            "registerResponse"=>$registerResponse,
+            "registrationSuccess"=>$registrationSuccess,
+            "charResponse"=>$charResponse,
+            "postResponse"=>$postResponse,
+            "posts"=>$posts,
+            "characterList"=>$characterList,
+            "postResponse"=>$postResponse
+        ]);
+    }
+
+    function tryLogin(){
+        if (!$this->ctrlViews->isUserAlreadyLoggedIn()) {
+            if (!$this->users->checkLoggedIn()) {
+                if ($this->ctrlViews->isLoginUsernameSet()){
+                    return $this->users->logOn();
+                } else if ($this->ctrlViews->didUserPressSubmitCreateAccount()) {
+                    return $this->users->createNewAccount(
+                        $this->ctrlViews->getNewAccountName(),
+                        $this->ctrlViews->getNewAccountPassword1(),
+                        $this->ctrlViews->getNewAccountPassword2(),
+                        $this->ctrlViews->getNewAccountMail()
                     );
                 }
             }
         }
-    }
-
-            //reload ui? hide login form? replace with 'welcome back, username!
-            //                                         'account info logout
-//
-
-    function logOn(){
-        return $this->users->logOn();
-    }
-
-    function accountExists($username, $pass){
-        return $this->users->checkUserNamePassword($username, $pass);
-    }
-
-    function checkEmail($email){
-        return $this->users->checkEmail($email);
-    }
-
-    function isAlreadyLoggedIn(){
-        return $this->users->checkLoggedIn();
-    }
-
-    function createAccount($usr, $pass1, $pass2, $email){
-        return $this->users->createNewAccount($usr, $pass1, $pass2, $email);
-    }
-
-    function getAccountData($usr){
-        return $this->users->retrieveAccount($usr);
-    }
-
-    function getAllPosts(){
-        return $this->users->retrievePosts();
-    }
-
-    function getAllCharacters($usr){
-        return $this->users->getCharacterListWithUsername($usr);
-    }
-
-    function deleteCharacterSuccessful($playername){
-        return $this->users->deleteCharacter($playername);
-    }
-
-    function characterCreated($characterInfo){
-        return $this->users->createNewCharacter($characterInfo);
-    }
-
-    function postCreated($post){
-        return $this->users->createNewPost($post);
-    }
-
-    function postEdited($post){
-        return $this->users->editExistingPost($post);
-    }
-
-    function postDeleted($postid){
-        return $this->users->deletePost($postid);
     }
 
     function logOut(){

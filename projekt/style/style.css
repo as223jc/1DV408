@@ -97,16 +97,23 @@ body, html{
 }
 
 #front-page{
-    width: 75%;
+    width: 77%;
     float: left;
+    height: 86%;
 }
+
+#all_posts{
+    height:100%;
+    overflow-y: auto;
+}
+
 
 #page-footer{
     background: rgba(255, 255, 255, 0.82);
     height:22%;
     width:100%;
     position:relative;
-    bottom: 100px;
+    /*bottom: 100px;*/
 }
 
 #login-div{
@@ -176,7 +183,7 @@ body, html{
     background:rgba(255, 255, 255, 0.67);
     width: 77%;
     float: right;
-    margin:0 auto 15px;
+    margin:0 10px 15px;
     padding:5px 0 5px;
     height:auto;
     border-radius: 5px;

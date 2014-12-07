@@ -193,14 +193,6 @@ class AccountDAL {
             } else {
                 return false;
             }
-//
-//
-//
-//            if($statement->num_rows === 1 && $pass === "")
-//                return true;
-//            if($statement->num_rows === 1 && $pass !== "")
-//                return true;
-//            return false;
         }
     }
 
@@ -492,7 +484,7 @@ class AccountDAL {
         if(!$statement->execute())
             throw new Exception("Kunde inte exekvera sql-satsen:<br> $q.<br><br> Felmeddelande:<br>". $statement->error);
         else
-            return true;
+            return false;
     }
 
     function editPost($post){
@@ -512,7 +504,7 @@ class AccountDAL {
         if(!$statement->execute())
             throw new Exception("Kunde inte exekvera sql-satsen:<br> $q.<br><br> Felmeddelande:<br>". $statement->error);
         else
-            return true;
+            return false;
     }
 
     function deletePostDB($postid){

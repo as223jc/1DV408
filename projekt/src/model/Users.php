@@ -1,24 +1,24 @@
 <?php
 
 require_once('AccountDAL.php');
+//Inkludera ControlViews för att utnyttja isset-kollerna
+require_once('src/view/ControlViews.php');
 
 /**
  * Class Users
  */
 class Users {
-    /**
-     * @var AccountDAL
-     */
+    CONST minPostLength = 15;
+    CONST minTitleLength = 4;
+
     private $accountDAL;
 
-    /**
-     * @param mysqli $db
-     */
     function __construct(mysqli $db) {
         $this->accountDAL = new AccountDAL($db);
         $this->accountDAL->createAccountTable();
         $this->accountDAL->createCharacterTable();
         $this->accountDAL->createPostTable();
+        $this->ctrlViews = new ControlViews();
     }
 
     /**
@@ -29,7 +29,7 @@ class Users {
      * @return array|bool
      * @throws Exception
      */
-    function checkUserNamePassword($username, $pass, $pass2="", $registration=false){
+    function checkUserNamePassword($username, $pass, $pass2="", $registration=false, $email=""){
         //Kontrollera användarnamn, använder en array för att skicka tillbaka true/false samtidigt
         //som jag skickar med ett meddelande (tom array = false, populated = true) DVS false = gå vidare / true = error
         $str = [];
@@ -48,10 +48,12 @@ class Users {
         else if($registration)
             if($pass !== $pass2)
                 $str[0] = "Passwords do not match";
+            else if (!preg_match("/[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}/", $email))
+                $str[0] = "Invalid e-mail address";
 
         if(!$str) {
             if(!$registration)
-                $sqlResp = $this->accountDAL->accountExists(["username" => $username], $pass);//komkmer hiut
+                $sqlResp = $this->accountDAL->accountExists(["username" => $username], $pass);
             else
                 $sqlResp = $this->accountDAL->accountExists(["username" => $username]);
             if ($sqlResp === true) {
@@ -64,7 +66,8 @@ class Users {
             }
             else {
                 if($pass2 ==="" )
-                    $str[0] = "Could not find username/password in database(debugging)";
+                    $str[0] = "Wrong username or password";
+//                    $str[0] = "Could not find username/password in database(debugging)";
                 return $str;
             }
         }else{
@@ -80,7 +83,7 @@ class Users {
      * @return bool
      */
     function logOn(){
-        if(isset($_POST["login_username"]) && isset($_POST["login_password"])) {
+//        if(isset($_POST["login_username"]) && isset($_POST["login_password"])) {
             $resp = $this->checkUserNamePassword($_POST["login_username"], $_POST["login_password"]);
             if (!$resp) {
                 //set cookie username, and a token(random data) to currsessionid plus time right now (201411261412)-format
@@ -91,9 +94,10 @@ class Users {
                 setcookie("SID", $token, time()+60*60*24*365, '/');
                 $_SESSION["logged_in"] = true;
             }
-            else
+            else {
                 return $resp[0];
-        }
+            }
+//        }
         return false;
     }
 
@@ -101,7 +105,6 @@ class Users {
      * @return bool
      */
     function checkLoggedIn(){
-
         if(isset($_COOKIE["UID"]) && isset($_COOKIE["SID"])){
             if($this->accountDAL->authLogin([
                 "username"=>$_COOKIE["UID"],
@@ -115,20 +118,6 @@ class Users {
     }
 
     /**
-     * @param $email
-     * @return array
-     */
-    function checkEmail($email){
-        //Kontrollera epostadress
-        if($email == ""){
-            $str[0] = "You must enter an e-mail address";
-            return $str;
-        }else{
-            return false;
-        }
-    }
-
-    /**
      * @param $usr
      * @param $pass1
      * @param $pass2
@@ -137,9 +126,7 @@ class Users {
      * @throws Exception
      */
     function createNewAccount($usr, $pass1, $pass2, $email){
-        $str = $this->checkUserNamePassword($usr, $pass1, $pass2, true);
-        if(!$str)
-            $str = $this->checkEmail($email);
+        $str = $this->checkUserNamePassword($usr, $pass1, $pass2, true, $email);
         if(!$str)
             return $this->accountDAL->createAccount([
                         "username"=>$usr,
@@ -202,12 +189,27 @@ class Users {
         return $ret[0];
     }
 
+    function validatePost($postTitle, $postText){
+        $str = [];
+        if(strlen($postTitle)<self::minTitleLength)
+            return $str[0] = "Title must be longer than  ".self::minTitleLength." characters";
+        else if(strlen($postText)<self::minPostLength)
+            return $str[0] = "Body of post must be at least ".self::minPostLength." characters";
+        return false;
+    }
+
     function createNewPost($post){
-        return $this->accountDAL->createPost($post);
+        $ret = $this->validatePost($post["title"], $post["text"]);
+        if(!$ret)
+            return $this->accountDAL->createPost($post);
+        return $ret;
     }
 
     function editExistingPost($post){
-        return $this->accountDAL->editPost($post);
+        $ret = $this->validatePost($post["title"], $post["text"]);
+        if(!$ret)
+            return $this->accountDAL->editPost($post);
+        return $ret;
     }
 
     function deletePost($postid){
